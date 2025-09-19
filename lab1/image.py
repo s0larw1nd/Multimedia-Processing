@@ -2,7 +2,7 @@ import cv2
 
 img = cv2.imread("media/img.jpg" #, cv2.IMREAD_UNCHANGED
                                 #, cv2.IMREAD_GRAYSCALE
-                                #, cv2.IMREAD_COLOR_RGB
+                                #, cv2.IMREAD_REDUCED_COLOR_8
                                 )
 
 
