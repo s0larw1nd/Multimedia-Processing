@@ -122,8 +122,8 @@ while True:
         pass
 
     try:
-        cv.circle(frame, (x, y), 0, (0, 0, 255), 10)
-        cv.rectangle(frame, (int(max(x-w/2,10)), int(max(y-h/2,10))), (int(max(x+w/2,10)), int(max(y+h/2,10))), (0, 0, 255), 5)
+        cv.circle(frame, (x, y), 0, (0, 0, 0), 10)
+        cv.rectangle(frame, (int(max(x-w/2,10)), int(max(y-h/2,10))), (int(max(x+w/2,10)), int(max(y+h/2,10))), (0, 0, 0), 5)
     except Exception:
         pass
     
