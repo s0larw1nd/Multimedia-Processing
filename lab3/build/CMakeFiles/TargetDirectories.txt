@@ -1,0 +1,3 @@
+D:/Programming/python/Multimedia-Processing/lab3/build/CMakeFiles/Lab3.dir
+D:/Programming/python/Multimedia-Processing/lab3/build/CMakeFiles/edit_cache.dir
+D:/Programming/python/Multimedia-Processing/lab3/build/CMakeFiles/rebuild_cache.dir

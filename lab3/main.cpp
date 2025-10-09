@@ -4,20 +4,21 @@
 #include <cmath>
 
 class GaussBlur {
-private:
+public:
     int n;
     cv::Mat gauss;
 
-public:
-    GaussBlur(double eps, int n) {
-        int a = n / 2;
-        int b = n / 2;
+    GaussBlur(double eps, int n_) {
+        int a = n_ / 2;
+        int b = n_ / 2;
 
-        gauss = cv::Mat(n, n);
+        n = n_;
+
+        gauss = cv::Mat(n_, n_, CV_64F);
 
         double sum = 0.0;
-        for (int y = 0; y < n; y++) {
-            for (int x = 0; x < n; x++) {
+        for (int y = 0; y < n_; y++) {
+            for (int x = 0; x < n_; x++) {
                 double val = (1.0 / (2 * M_PI * eps * eps)) *
                              std::exp(-((x - a) * (x - a) + (y - b) * (y - b)) / (2 * eps * eps));
                 gauss.at<double>(y, x) = val;
@@ -41,7 +42,7 @@ public:
         return res;
     }
 
-    cv::Mat blur(const cv::Mat &img) {
+    cv::Mat blur(const cv::Mat img) {
         cv::Mat padded;
         int border = n / 2;
 
@@ -53,7 +54,7 @@ public:
             for (int x = 0; x < img.cols; x++) {
                 cv::Rect rect(x, y, n, n);
                 cv::Mat pad_rect = padded(rect);
-                cv::Vec3d val = apply_kernel(roi);
+                cv::Vec3d val = apply_kernel(pad_rect);
                 new_img.at<cv::Vec3b>(y, x) = cv::Vec3b(
                     cv::saturate_cast<uchar>(val[0]),
                     cv::saturate_cast<uchar>(val[1]),
@@ -70,10 +71,15 @@ public:
     }
 };
 
-int main() {
-    GaussBlur gauss(0.84089642, 3);
+int main(int argc, char *argv[]) {
+    int n = 3;
+    if (argc > 1) { n = std::atoi(argv[1]); }
+    double eps = 0.84089642;
+    if (argc > 2) { eps = atof(argv[2]); }
 
-    cv::Mat img = cv::imread("media/img.png");
+    GaussBlur gauss(eps, n);
+
+    cv::Mat img = cv::imread("./img.png");
 
     cv::imshow("Window_orig", img);
 
@@ -81,7 +87,7 @@ int main() {
     cv::imshow("Window blur", my_blur);
 
     cv::Mat cv2_blur;
-    cv::filter2D(img, cv2_blur, -1, gauss.getKernel());
+    cv::GaussianBlur(img, cv2_blur, cv::Size(n, n), eps);
     cv::imshow("Window CV2", cv2_blur);
 
     cv::waitKey(0);

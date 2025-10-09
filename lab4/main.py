@@ -95,8 +95,14 @@ for y in range(1, len(new_img)-1):
                 new_img[y+1,x+1]
             ]): borders[y,x] = 255
 
-cv2.imshow('Display window1', dst)
-cv2.imshow('Display window2', borders)
+cv2.imshow('Display window: Original', img)
+cv2.imshow('Display window: Gauss', dst)
+cv2.imshow('Display window: Borders only', borders)
+
+#for y in range(len(img)):
+#    for x in range(len(img[y])):
+#        img[y][x] = max(img[y][x], borders[y][x])
+#cv2.imshow('Display window: Borders', img)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

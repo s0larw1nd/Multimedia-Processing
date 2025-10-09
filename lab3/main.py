@@ -41,7 +41,7 @@ class GaussBlur:
 
         return new_img
 
-gauss = GaussBlur(0.84089642, 3)
+gauss = GaussBlur(15, 3)
 
 img = cv2.imread("media/img.png")
 cv2.imshow("Window_orig", img)
