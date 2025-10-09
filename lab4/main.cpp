@@ -26,12 +26,16 @@ int quantize_angle(float angle_deg) {
     else return 2;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    int n = 7;
+    if (argc > 1) { n = std::atoi(argv[1]); }
+    double eps = 5;
+    if (argc > 2) { eps = atof(argv[2]); }
+
     Mat img = imread("./img.png", IMREAD_GRAYSCALE);
 
-    Mat kernel = Mat::ones(5, 5, CV_32F) / 25.0;
     Mat dst;
-    filter2D(img, dst, -1, kernel);
+    cv::GaussianBlur(img, dst, cv::Size(n, n), eps);
 
     Mat Gx = (Mat_<float>(3,3) <<
         -1, 0, 1,
@@ -44,7 +48,7 @@ int main() {
          1,  2,  1
     );
 
-    Mat new_img = Mat::zeros(img.size(), CV_32F);
+    Mat new_img = Mat::zeros(img.size(), CV_8U);
     Mat grads = Mat::zeros(img.size(), CV_32F);
 
     float mxl = -1.0f;
@@ -71,35 +75,37 @@ int main() {
 
             float val = grads.at<float>(y, x);
             if ((angle_round == 2 || angle_round == 6) && val > max(grads.at<float>(y, x-1), grads.at<float>(y, x+1)))
-                new_img.at<float>(y, x) = 255;
+                new_img.at<uchar>(y, x) = 255;
             else if ((angle_round == 0 || angle_round == 4) && val > max(grads.at<float>(y-1, x), grads.at<float>(y+1, x)))
-                new_img.at<float>(y, x) = 255;
+                new_img.at<uchar>(y, x) = 255;
             else if ((angle_round == 3 || angle_round == 7) && val > max(grads.at<float>(y-1, x-1), grads.at<float>(y+1, x+1)))
-                new_img.at<float>(y, x) = 255;
+                new_img.at<uchar>(y, x) = 255;
             else if ((angle_round == 1 || angle_round == 5) && val > max(grads.at<float>(y-1, x+1), grads.at<float>(y+1, x-1)))
-                new_img.at<float>(y, x) = 255;
+                new_img.at<uchar>(y, x) = 255;
         }
     }
 
-    float low_level = mxl / 25.0f;
-    float high_level = mxl / 10.0f;
+    float low_level = mxl / 7.0f;
+    float high_level = mxl / 3.0f;
 
     Mat borders = Mat::zeros(img.size(), CV_8U);
 
     for (int y = 1; y < new_img.rows - 1; y++) {
         for (int x = 1; x < new_img.cols - 1; x++) {
-            float val = new_img.at<float>(y, x);
-            if (val >= high_level) {
-                borders.at<uchar>(y, x) = 255;
-            } else if (val >= low_level && val < high_level) {
-                bool strong_neighbor = false;
-                for (int dy = -1; dy <= 1; dy++) {
-                    for (int dx = -1; dx <= 1; dx++) {
-                        if (new_img.at<float>(y+dy, x+dx) >= high_level)
-                            strong_neighbor = true;
+            if (new_img.at<uchar>(y, x)==255){
+                float val = grads.at<float>(y, x);
+                if (val >= high_level) {
+                    borders.at<uchar>(y, x) = 255;
+                } else if (val >= low_level && val < high_level) {
+                    bool strong_neighbor = false;
+                    for (int yy = -1; yy <= 1; yy++) {
+                        for (int xx = -1; xx <= 1; xx++) {
+                            if (grads.at<float>(y+yy, x+xx) >= high_level)
+                                strong_neighbor = true;
+                        }
                     }
+                    if (strong_neighbor) borders.at<uchar>(y, x) = 255;
                 }
-                if (strong_neighbor) borders.at<uchar>(y, x) = 255;
             }
         }
     }

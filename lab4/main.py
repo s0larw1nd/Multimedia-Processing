@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
 
-img = cv2.imread("media/img.png", cv2.IMREAD_GRAYSCALE)
+n = 7
+eps = 1
 
-kernel = np.ones((5,5),np.float32)/25
-dst = cv2.filter2D(img,-1,kernel)
+img = cv2.imread("media/img_small.png", cv2.IMREAD_GRAYSCALE)
+dst = cv2.GaussianBlur(img, (n, n), eps)
 
 def apply_kernel(matr, ker):
     res = 0
@@ -75,29 +76,31 @@ for y in range(1, len(dst)-1):
         elif angle_round in [1,5] and grads[y,x]>max(grads[y-1,x+1],grads[y+1,x-1]):
             new_img[y,x] = 255
 
-low_level = mxl // 25
-high_level = mxl // 10
+low_level = mxl // 7
+high_level = mxl // 3
 
 borders = np.zeros(img.shape)
 
 for y in range(1, len(new_img)-1):
     for x in range(1, len(new_img[y])-1):
-        if new_img[y,x] >= high_level: borders[y,x] = 255
-        elif low_level <= new_img[y,x] < high_level:
-            if any(x >= high_level for x in [
-                new_img[y-1,x],
-                new_img[y+1,x],
-                new_img[y,x-1],
-                new_img[y,x+1],
-                new_img[y-1,x-1],
-                new_img[y-1,x+1],
-                new_img[y+1,x-1],
-                new_img[y+1,x+1]
-            ]): borders[y,x] = 255
+        if new_img[y,x] == 255:
+            if grads[y,x] >= high_level: borders[y,x] = 255
+            elif low_level <= grads[y,x] < high_level:
+                if any(x >= high_level for x in [
+                    grads[y-1,x],
+                    grads[y+1,x],
+                    grads[y,x-1],
+                    grads[y,x+1],
+                    grads[y-1,x-1],
+                    grads[y-1,x+1],
+                    grads[y+1,x-1],
+                    grads[y+1,x+1]
+                ]): borders[y,x] = 255
 
 cv2.imshow('Display window: Original', img)
 cv2.imshow('Display window: Gauss', dst)
 cv2.imshow('Display window: Borders only', borders)
+#cv2.imshow('Display window: Open', cv2.morphologyEx(borders, cv2.MORPH_OPEN, np.ones((3, 3))))
 
 #for y in range(len(img)):
 #    for x in range(len(img[y])):

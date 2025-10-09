@@ -41,13 +41,17 @@ class GaussBlur:
 
         return new_img
 
-gauss = GaussBlur(15, 3)
+
+n = 5
+eps = 0.84089642
+
+gauss = GaussBlur(eps, n)
 
 img = cv2.imread("media/img.png")
 cv2.imshow("Window_orig", img)
 cv2.imshow("Window blur", gauss.blur(img))
 
-cv2_img = cv2.filter2D(src=img, ddepth=-1, kernel=gauss.gauss)
+cv2_img = cv2.GaussianBlur(img, (n, n), eps)
 cv2.imshow("Window CV2", cv2_img)
 
 cv2.waitKey(0)
