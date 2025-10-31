@@ -3,8 +3,8 @@ import numpy as np
 class GaussBlur:
     def __init__(self, eps=0.84089642, n=3):
         self.n = n
-        a = self.n//2
-        b = self.n//2
+        a = self.n//2+1
+        b = self.n//2+1
         self.gauss = []
         for y in range(n):
             self.gauss.append([])
