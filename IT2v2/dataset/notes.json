@@ -1,0 +1,25 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "counter"
+    },
+    {
+      "id": 1,
+      "name": "counter_head"
+    },
+    {
+      "id": 2,
+      "name": "ter"
+    },
+    {
+      "id": 3,
+      "name": "ter_head"
+    }
+  ],
+  "info": {
+    "year": 2025,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}
